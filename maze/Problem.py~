@@ -1,0 +1,34 @@
+class Problem(object):
+
+    def __init__(self,
+                 initial_state):
+        self.initial_state = initial_state
+    
+    def get_initial_state(self):
+        return self.initial_state
+
+    def goal_test(self, state):
+        raise NotImplementedError
+                 
+    def actions(self, state):
+        raise NotImplementedError
+
+    def result(self, state, action):
+        raise NotImplementedError
+
+    def successors(self, state):
+        return self.maze.get_adj_tuple(state.value, action)
+            
+    def cost(self, action):
+        return 1
+
+
+class MazeProblem(Problem):
+
+    def __init__(self,
+                 maze=None,
+                 initial_state=None,
+                 goal_states=None):
+        Problem.__init__(self, initial_state)
+        self.maze = maze
+        self.goal_states = goal_states

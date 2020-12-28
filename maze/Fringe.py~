@@ -1,0 +1,99 @@
+"""
+Fringe:
+    - put, get
+    - membership
+    - find and update (for UCS)
+"""
+
+import collections
+
+class Fringe:
+    def __init__(self):
+        pass
+    def put(self, x):
+        raise NotImplementedError
+    def get(self, x):
+        raise NotImplementedError
+    def __contains__(self):
+        raise NotImplementedError
+    def size(self):
+        raise NotImplementedError
+    def __len__(self):
+        return 0 # Must be overwritten
+    def __contains__(self, x):
+        raise NotImplementedError
+    
+    
+class Stack(Fringe):
+    def __init__(self):
+        Fringe.__init__(self)
+        self.deque = collections.deque()
+    def put(self, node):
+        if node.state not in [n.state for n in self.deque]:
+            self.deque.append(node)
+    def get(self):
+        return self.deque.pop()
+    def __len__(self):
+        return len(self.deque)
+    def size(self):
+        return len(self.deque)
+    def __contains__(self, node):
+        return node.state in self.deque
+    def __str__(self):
+        s = str(self.deque)[7:-2]
+        return '<Stack [%s]>' % s
+    
+    
+class Queue(Fringe):
+    def __init__(self):
+        Fringe.__init__(self)
+        self.deque = collections.deque()
+    def put(self, x):
+        self.deque.append(x)
+    def get(self):
+        return self.deque.popleft()
+    def __len__(self):
+        return len(self.deque)
+    def size(self):
+        return len(self.deque)
+    def __contains__(self, node):
+        return node.state in self.deque
+    def __str__(self):
+        s = str(self.deque)[7:-2]
+        return '<Queue [%s]>' % s
+
+
+class FSFringe(Fringe):
+    """
+    stack = FSFringe(Stack()) # creates fast search stack
+    queue = FSFringe(Queue()) # creates fast search stack
+
+    Assume values are unique.
+    """
+    def __init__(self, fringe):
+        Fringe.__init__(self)
+        self.fringe = fringe
+        self.set = set()
+    def put(self, node):
+        if node.state not in self.set:
+            self.fringe.put(node)
+            self.set.add(hash(node.state))
+    def get(self):
+        node = self.fringe.get()
+        self.set.remove(hash(node.state))
+    def __len__(self):
+        return len(self.fringe)
+    def size(self):
+        return len(self.fringe)
+    def __contains__(self, node):
+        return hash(node.state) in self.set
+    def __str__(self):
+        s = str(self.fringe)
+        s = '<FS' + s[1:]
+        return s
+
+def FSStack():
+    return FSFringe(Stack())
+
+def FSQueue():
+    return FSFringe(Queue())
